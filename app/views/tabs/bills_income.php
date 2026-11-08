@@ -55,6 +55,8 @@
                                     $isPaid = (int)$b['is_paid'] === 1;
                                     $isEditingThis = ($editBillId && (int)$b['id'] === $editBillId);
                                     $remaining = max(0.0, $est - $act);
+                                    $isPartial = (!$isPaid && $act > 0 && $act < $est);
+                                    $rowClass = $isPaid ? 'is-paid-row' : ($isPartial ? 'is-partial-row' : 'is-unpaid-row');
                                 ?>
                                     <?php if ($isEditingThis): ?>
                                         <!-- INLINE EDIT ROW -->
@@ -228,7 +230,7 @@
                                         </tr>
                                     <?php else: ?>
                                         <!-- STANDARD ROW -->
-                                        <tr class="<?= $isPaid ? 'is-paid-row' : '' ?>" id="bill-<?= $b['id'] ?>">
+                                        <tr class="<?= $rowClass ?>" id="bill-<?= $b['id'] ?>">
                                             <td>
                                                 <span class="badge badge-due"><?= htmlspecialchars($b['due_date_label']) ?></span>
                                             </td>

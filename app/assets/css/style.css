@@ -35,18 +35,24 @@ body {
 }
 
 .container {
-    max-width: 1280px;
+    width: 100%;
+    max-width: 100%;
     margin: 0 auto;
-    padding: 20px;
+    padding: 20px clamp(16px, 2vw, 36px);
 }
 
 /* Header & Month Bar */
 .app-header {
     background-color: var(--bg-card);
     border-bottom: 1px solid var(--border-color);
-    padding: 16px 0;
+    padding: 14px 0;
     margin-bottom: 24px;
     box-shadow: var(--shadow-sm);
+}
+
+.app-header .header-inner {
+    padding-top: 0;
+    padding-bottom: 0;
 }
 
 .header-inner {
@@ -64,6 +70,14 @@ body {
     display: flex;
     align-items: center;
     gap: 8px;
+}
+
+.mobile-toggle-indicator {
+    display: none;
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    transition: transform 0.2s ease, color 0.15s ease;
+    margin-left: 2px;
 }
 
 .brand-badge {
@@ -195,13 +209,14 @@ body {
 /* Main Content Grid */
 .content-grid {
     display: grid;
-    grid-template-columns: 1.3fr 1.1fr;
-    gap: 16px;
+    grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr);
+    gap: 20px;
 }
 
-@media (max-width: 900px) {
+@media (min-width: 1440px) {
     .content-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+        gap: 24px;
     }
 }
 
@@ -249,6 +264,7 @@ body {
 .table-responsive {
     width: 100%;
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 table {
@@ -274,21 +290,154 @@ td {
     vertical-align: middle;
 }
 
+.item-name {
+    font-weight: 600;
+    color: var(--text-main);
+    word-break: break-word;
+    overflow-wrap: anywhere;
+}
+
+/* Specific table cell padding */
+.bills-table th,
+.bills-table td,
 .income-table th,
-.income-table td {
+.income-table td,
+.purchases-table th,
+.purchases-table td,
+.categories-table th,
+.categories-table td,
+.gas-table th,
+.gas-table td {
     padding: 9px 8px;
+}
+
+/* Desktop column widths & wrapping to prevent horizontal scroll */
+@media (min-width: 641px) {
+    .bills-table {
+        table-layout: auto;
+        width: 100%;
+    }
+
+    /* 1. Due date badge */
+    .bills-table > thead > tr > th:nth-child(1),
+    .bills-table > tbody > tr > td:nth-child(1) {
+        width: 48px;
+        white-space: nowrap;
+    }
+
+    /* 2. Bill / Payee (Flexible width, wraps long text without pushing other columns) */
+    .bills-table > thead > tr > th:nth-child(2),
+    .bills-table > tbody > tr > td:nth-child(2) {
+        min-width: 120px;
+        word-break: break-word;
+        overflow-wrap: anywhere;
+    }
+
+    /* 3. Estimate */
+    .bills-table > thead > tr > th:nth-child(3),
+    .bills-table > tbody > tr > td:nth-child(3) {
+        width: 80px;
+        white-space: nowrap;
+        text-align: right;
+    }
+
+    /* 4. Status button */
+    .bills-table > thead > tr > th:nth-child(4),
+    .bills-table > tbody > tr > td:nth-child(4) {
+        width: 75px;
+        white-space: nowrap;
+        text-align: center;
+    }
+
+    /* 5. Actual Paid */
+    .bills-table > thead > tr > th:nth-child(5),
+    .bills-table > tbody > tr > td:nth-child(5) {
+        width: 85px;
+        white-space: nowrap;
+        text-align: right;
+    }
+
+    /* 6. Date Paid */
+    .bills-table > thead > tr > th:nth-child(6),
+    .bills-table > tbody > tr > td:nth-child(6) {
+        width: 125px;
+    }
+
+    /* 7. Actions */
+    .bills-table > thead > tr > th:nth-child(7),
+    .bills-table > tbody > tr > td:nth-child(7) {
+        width: 80px;
+        white-space: nowrap;
+        text-align: right;
+    }
+
+    /* Column wrapping for Purchases, Income, Categories & Gas tables */
+    .purchases-table > thead > tr > th:nth-child(2),
+    .purchases-table > tbody > tr > td:nth-child(2),
+    .purchases-table > thead > tr > th:nth-child(3),
+    .purchases-table > tbody > tr > td:nth-child(3),
+    .income-table > thead > tr > th:nth-child(1),
+    .income-table > tbody > tr > td:nth-child(1),
+    .categories-table > thead > tr > th:nth-child(1),
+    .categories-table > tbody > tr > td:nth-child(1),
+    .gas-table > thead > tr > th:nth-child(2),
+    .gas-table > tbody > tr > td:nth-child(2) {
+        word-break: break-word;
+        overflow-wrap: anywhere;
+    }
 }
 
 tr:last-child td {
     border-bottom: none;
 }
 
+/* Row Status Styling */
 tr.is-paid-row {
     background-color: #fbfdfc;
 }
-
 tr.is-paid-row .item-name {
     color: var(--success);
+}
+
+/* Unpaid Row: soft rose background hue */
+tr.is-unpaid-row {
+    background-color: #fff7f7;
+}
+tr.is-unpaid-row td {
+    border-bottom-color: #fee2e2;
+}
+tr.is-unpaid-row .item-name {
+    color: #991b1b;
+    font-weight: 700;
+}
+tr.is-unpaid-row .badge-due {
+    background-color: #fee2e2;
+    color: #b91c1c;
+}
+tr.is-unpaid-row .btn-toggle-unpaid {
+    border-color: #fca5a5;
+    background-color: #fff;
+    color: #dc2626;
+    font-weight: 700;
+}
+tr.is-unpaid-row .btn-toggle-unpaid:hover {
+    background-color: #fee2e2;
+}
+
+/* Partially Paid Row: warm amber hue */
+tr.is-partial-row {
+    background-color: #fffdf5;
+}
+tr.is-partial-row td {
+    border-bottom-color: #fef3c7;
+}
+tr.is-partial-row .item-name {
+    color: #92400e;
+    font-weight: 700;
+}
+tr.is-partial-row .badge-due {
+    background-color: #fef3c7;
+    color: #b45309;
 }
 
 .amount {
@@ -688,29 +837,80 @@ section > .form-card:first-child {
         padding: 12px;
     }
 
-    /* Header: stack brand + month selector */
+    /* Header: compact bar with clickable toggle */
+    .app-header {
+        padding: 10px 0;
+        margin-bottom: 14px;
+    }
+
     .header-inner {
         flex-direction: column;
-        align-items: stretch;
-        gap: 10px;
+        align-items: center;
+        gap: 0;
     }
 
     .brand-title {
         justify-content: center;
         font-size: 1.2rem;
+        cursor: pointer;
+        user-select: none;
+        -webkit-tap-highlight-color: transparent;
+        padding: 6px 12px;
+        border-radius: var(--radius-sm);
+        transition: background-color 0.15s ease;
     }
 
-    .month-selector-form {
+    .brand-title:hover,
+    .brand-title:active {
+        background-color: #f1f5f9;
+    }
+
+    .mobile-toggle-indicator {
+        display: inline-flex;
+    }
+
+    /* By default on mobile, HIDE Month Selector & KPI Cards */
+    .month-selector-form,
+    .kpi-grid {
+        display: none !important;
+    }
+
+    /* When expanded by tapping Personal Finance */
+    body.mobile-overview-open .header-inner {
+        gap: 12px;
+    }
+
+    body.mobile-overview-open .month-selector-form {
+        display: flex !important;
         justify-content: center;
         gap: 8px;
         flex-wrap: wrap;
         width: 100%;
+        animation: fadeInDown 0.2s ease-out;
     }
 
-    /* KPI cards: 2 per row */
-    .kpi-grid {
+    body.mobile-overview-open .kpi-grid {
+        display: grid !important;
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 10px;
+        margin-bottom: 16px;
+        animation: fadeInDown 0.2s ease-out;
+    }
+
+    body.mobile-overview-open .mobile-toggle-indicator {
+        transform: rotate(180deg);
+        color: var(--primary);
+    }
+
+    @keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-8px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 
     .kpi-card {
@@ -860,6 +1060,21 @@ section > .form-card:first-child {
 
     .stack-table > tbody > tr:last-child {
         border-bottom: none;
+    }
+
+    /* Mobile Card Status Accents (Paid, Unpaid, Partial) */
+    .stack-table > tbody > tr.is-paid-row {
+        background-color: #fbfdfc;
+    }
+
+    .stack-table > tbody > tr.is-unpaid-row {
+        background-color: #fff7f7;
+        border-bottom-color: #fecaca;
+    }
+
+    .stack-table > tbody > tr.is-partial-row {
+        background-color: #fffdf5;
+        border-bottom-color: #fef3c7;
     }
 
     .stack-table > tbody > tr > td,
@@ -1041,7 +1256,11 @@ section > .form-card:first-child {
     }
 
     .header-inner {
-        gap: 8px;
+        gap: 0;
+    }
+
+    body.mobile-overview-open .header-inner {
+        gap: 10px;
     }
 
     .brand-title {
